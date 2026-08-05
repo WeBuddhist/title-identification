@@ -21,31 +21,82 @@ export const getAllTask = async (limit, skip) => {
   }
 };
 
+// Case/whitespace-tolerant lookup, since source CSVs are hand-exported and
+// header casing drifts (e.g. "Batch_ID" vs "batch_id").
+const getField = (row, ...names) => {
+  for (const name of names) {
+    if (row[name] !== undefined && row[name] !== "") return row[name];
+  }
+  const lowerKeys = Object.keys(row).reduce((acc, key) => {
+    acc[key.trim().toLowerCase()] = row[key];
+    return acc;
+  }, {});
+  for (const name of names) {
+    const value = lowerKeys[name.toLowerCase()];
+    if (value !== undefined && value !== "") return value;
+  }
+  return undefined;
+};
+
 export async function createTasksFromCSV(formData) {
   let tasksToCreate = [];
   try {
     const groupId = formData.get("group_id");
+    const imageBaseUrl = (formData.get("image_base_url") || "").trim();
     const tasksFile = formData.get("tasks");
     const parsedTasksFile = JSON.parse(tasksFile);
     // Create an array to hold task data
     tasksToCreate = await Promise.all(
       parsedTasksFile.map((row) => {
-        // Extract data from the CSV row
-        const diplomatic_context = row.diplomatic_context;
-        const normalised_context = row.normalised_context;
-        const id = row.id;
-        const batch_id = row.batch_id;
+        // Extract data from the CSV row. Rachael's title-page export uses
+        // Batch_ID, image_name, title_diplomatic, title_normalised.
+        const batch_id = getField(row, "batch_id", "Batch_ID");
+        const image_name = getField(row, "image_name", "Image_Name");
+        const diplomatic_context = getField(
+          row,
+          "title_diplomatic",
+          "diplomatic_context"
+        );
+        const normalised_context = getField(
+          row,
+          "title_normalised",
+          "normalised_context"
+        );
+        // Prefer an explicit URL column if the script ever provides one;
+        // otherwise build it from the per-batch S3 base URL + image name.
+        const explicitUrl = getField(row, "url", "image_url");
+        const url =
+          explicitUrl ||
+          (imageBaseUrl
+            ? `${imageBaseUrl.replace(/\/+$/, "")}/${encodeURIComponent(
+                image_name || ""
+              )}`
+            : "");
+        // image_name values repeat across cameras/batches, so the id is
+        // namespaced by batch_id to stay unique.
+        const id = getField(row, "id") || `${batch_id}__${image_name}`;
 
         // Return task data as an object
         return {
           group_id: parseInt(groupId),
-          diplomatic_context: diplomatic_context,
-          normalised_context: normalised_context,
-          id: id,
-          batch_id: batch_id,
+          id,
+          batch_id,
+          image_name,
+          url,
+          diplomatic_context,
+          normalised_context,
         };
       })
     );
+
+    const missingUrl = tasksToCreate.find((task) => !task.url);
+    if (missingUrl) {
+      console.error(
+        "Error parsing tasks file: missing image URL for row",
+        missingUrl.id
+      );
+      return { count: 0 };
+    }
   } catch (error) {
     console.error("Error parsing tasks file:", error);
     return { count: 0 };
@@ -259,8 +310,11 @@ export const getTranscriberTaskList = async (id, dates, groupId) => {
         },
         select: {
           diplomatic_context: true,
-          corrected_context: true,
-          reviewed_context: true,
+          normalised_context: true,
+          corrected_diplomatic: true,
+          corrected_normalised: true,
+          reviewed_diplomatic: true,
+          reviewed_normalised: true,
           state: true,
         },
       });
@@ -273,8 +327,11 @@ export const getTranscriberTaskList = async (id, dates, groupId) => {
         },
         select: {
           diplomatic_context: true,
-          corrected_context: true,
-          reviewed_context: true,
+          normalised_context: true,
+          corrected_diplomatic: true,
+          corrected_normalised: true,
+          reviewed_diplomatic: true,
+          reviewed_normalised: true,
           state: true,
         },
       });
@@ -440,8 +497,10 @@ export const getReviewerTaskList = async (id, dates) => {
         },
         select: {
           state: true,
-          reviewed_context: true,
-          final_reviewed_context: true,
+          reviewed_diplomatic: true,
+          reviewed_normalised: true,
+          final_diplomatic: true,
+          final_normalised: true,
         },
       });
       return filteredTasks;
@@ -452,8 +511,10 @@ export const getReviewerTaskList = async (id, dates) => {
         },
         select: {
           state: true,
-          reviewed_context: true,
-          final_reviewed_context: true,
+          reviewed_diplomatic: true,
+          reviewed_normalised: true,
+          final_diplomatic: true,
+          final_normalised: true,
         },
       });
       return filteredTasks;

@@ -28,7 +28,13 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   ];
 
   return (
-    <div className="flex flex-col justify-center items-center overflow-y-auto">
+    // justify-start (not center): position: sticky inside a centered flex
+    // column doesn't reliably stick once content overflows and scrolls.
+    // No overflow-y-auto here: without a bounded height it never actually
+    // scrolls itself (the document/<html> does), which makes it the sticky
+    // "scroll container" by CSS spec while it never fires a scroll event —
+    // any position:sticky descendant (the task image band) goes inert.
+    <div className="flex flex-col justify-start items-center">
       {session === undefined || session === "" ? (
         <>
           <div className="text-xl font-semibold mt-10 p-5 text-center">

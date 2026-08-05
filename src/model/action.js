@@ -19,7 +19,8 @@ const getTaskSelectForRole = (role) => {
     group_id: true,
     batch_id: true,
     state: true,
-    diplomatic_context: true,
+    image_name: true,
+    url: true,
     reviewer_rejected_count: true,
     final_reviewer_rejected_count: true,
   };
@@ -28,31 +29,47 @@ const getTaskSelectForRole = (role) => {
     case "TRANSCRIBER":
       return {
         ...base,
+        diplomatic_context: true,
         normalised_context: true,
-        corrected_context: true,
+        is_title_page: true,
+        corrected_diplomatic: true,
+        corrected_normalised: true,
       };
     case "REVIEWER":
       return {
         ...base,
-        corrected_context: true,
-        reviewed_context: true,
+        corrected_diplomatic: true,
+        corrected_normalised: true,
+        reviewed_is_title: true,
+        reviewed_diplomatic: true,
+        reviewed_normalised: true,
         transcriber: { select: { name: true } },
       };
     case "FINAL_REVIEWER":
       return {
         ...base,
-        reviewed_context: true,
-        final_reviewed_context: true,
+        reviewed_diplomatic: true,
+        reviewed_normalised: true,
+        final_is_title: true,
+        final_diplomatic: true,
+        final_normalised: true,
         transcriber: { select: { name: true } },
         reviewer: { select: { name: true } },
       };
     default:
       return {
         ...base,
+        diplomatic_context: true,
         normalised_context: true,
-        corrected_context: true,
-        reviewed_context: true,
-        final_reviewed_context: true,
+        is_title_page: true,
+        corrected_diplomatic: true,
+        corrected_normalised: true,
+        reviewed_is_title: true,
+        reviewed_diplomatic: true,
+        reviewed_normalised: true,
+        final_is_title: true,
+        final_diplomatic: true,
+        final_normalised: true,
         transcriber: { select: { name: true } },
         reviewer: { select: { name: true } },
       };
@@ -222,11 +239,19 @@ export const assignUnassignedTasks = async (
         t.group_id,
         t.state,
         t.batch_id,
+        t.image_name,
+        t.url,
         t.diplomatic_context,
         t.normalised_context,
-        t.corrected_context,
-        t.reviewed_context,
-        t.final_reviewed_context,
+        t.is_title_page,
+        t.corrected_diplomatic,
+        t.corrected_normalised,
+        t.reviewed_is_title,
+        t.reviewed_diplomatic,
+        t.reviewed_normalised,
+        t.final_is_title,
+        t.final_diplomatic,
+        t.final_normalised,
         t.reviewer_rejected_count,
         t.final_reviewer_rejected_count,
         tr.name AS "transcriber.name",
@@ -358,11 +383,16 @@ export const updateTask = async (
   // Add role-specific fields - business logic is now handled in the UI
   switch (role) {
     case "TRANSCRIBER":
-      // Save the corrected_context (already processed by UI business logic)
+      // Save the corrected diplomatic/normalised text and the YES/NO answer
+      // (already processed by UI business logic)
       if (changedTask.state !== "trashed") {
-        dataToUpdate.corrected_context = task.corrected_context;
+        dataToUpdate.is_title_page = task.is_title_page;
+        dataToUpdate.corrected_diplomatic = task.corrected_diplomatic;
+        dataToUpdate.corrected_normalised = task.corrected_normalised;
       } else {
-        dataToUpdate.corrected_context = null;
+        dataToUpdate.is_title_page = null;
+        dataToUpdate.corrected_diplomatic = null;
+        dataToUpdate.corrected_normalised = null;
       }
 
       dataToUpdate.submitted_at = new Date().toISOString();
@@ -370,11 +400,16 @@ export const updateTask = async (
       break;
 
     case "REVIEWER":
-      // Save the reviewed_context (already processed by UI business logic)
+      // Save the reviewed diplomatic/normalised text and the YES/NO answer
+      // (already processed by UI business logic)
       if (changedTask.state === "accepted") {
-        dataToUpdate.reviewed_context = task.reviewed_context;
+        dataToUpdate.reviewed_is_title = task.reviewed_is_title;
+        dataToUpdate.reviewed_diplomatic = task.reviewed_diplomatic;
+        dataToUpdate.reviewed_normalised = task.reviewed_normalised;
       } else {
-        dataToUpdate.reviewed_context = null;
+        dataToUpdate.reviewed_is_title = null;
+        dataToUpdate.reviewed_diplomatic = null;
+        dataToUpdate.reviewed_normalised = null;
       }
 
       dataToUpdate.reviewed_at = new Date().toISOString();
@@ -385,11 +420,16 @@ export const updateTask = async (
       break;
 
     case "FINAL_REVIEWER":
-      // Save the final_reviewed_context (already processed by UI business logic)
+      // Save the final diplomatic/normalised text and the YES/NO answer
+      // (already processed by UI business logic)
       if (changedTask.state === "finalised") {
-        dataToUpdate.final_reviewed_context = task.final_reviewed_context;
+        dataToUpdate.final_is_title = task.final_is_title;
+        dataToUpdate.final_diplomatic = task.final_diplomatic;
+        dataToUpdate.final_normalised = task.final_normalised;
       } else {
-        dataToUpdate.final_reviewed_context = null;
+        dataToUpdate.final_is_title = null;
+        dataToUpdate.final_diplomatic = null;
+        dataToUpdate.final_normalised = null;
       }
 
       dataToUpdate.final_reviewed_at = new Date().toISOString();

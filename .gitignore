@@ -16,9 +16,6 @@ next-env.d.ts
 # Dependencies
 node_modules/
 
-# Prisma migrations (specific)
-prisma/migrations/20250902094430_dictionary_schema/
-
 # Other common ignores
 .DS_Store
 *.log
@@ -33,4 +30,5 @@ yarn-error.log*
 # Build outputs
 dist/
 build/
+coverage/
 

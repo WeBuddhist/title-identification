@@ -1,6 +1,6 @@
 let languagesObject = {
   en: {
-    title: "Dictionary Checking Tool",
+    title: "Title Checking Tool",
     project: "Project Info",
     user: "User",
     group: "Group",
@@ -22,21 +22,17 @@ let languagesObject = {
     speed: "Speed",
     language: "Language",
     history: "History",
-    // Dictionary correction UI
-    original: "Original:",
-    suggested_normalisation: "Suggested normalisation:",
-    is_correct_question: "Is the suggested normalisation correct?",
+    // Title checking UI
+    diplomatic_transcription: "Diplomatic transcription",
+    normalised_transcription: "Normalised transcription",
+    is_title_page_question: "Is this a title page?",
     yes: "YES",
     no: "NO",
-    correction_prompt: "If not, what should the normalised form be?",
-    correction_instruction: "Please only type the expansion that goes between the square brackets.",
-    correction_placeholder: "text box to type a line",
     validation_select_option: "Please select YES or NO before submitting.",
-    validation_correction_required: "Please provide the normalized form when selecting NO.",
     download: "Download",
   },
   bo: {
-    title: "Dictionary Checking Tool",
+    title: "Title Checking Tool",
     project: "ལས་འཆར་ཆ་འཕྲིན།",
     user: "སྤྱོད་མཁན།",
     group: "སྡེ་ཚན།",
@@ -58,17 +54,15 @@ let languagesObject = {
     speed: "མྱུར་ཚད།",
     language: "སྐད་ཡིག།",
     history: "ལོ་རྒྱུས།",
-    // Dictionary correction UI
-    original: "དངོས་གཞི།",
-    suggested_normalisation: "འདེམས་ཁའི་སྤྱིར་བསྒྱུར།",
-    is_correct_question: "འདེམས་ཁའི་སྤྱིར་བསྒྱུར་འདི་ཡག་པོ་ཡོད་དམ།",
+    // Title checking UI
+    // NOTE: draft translation, please have a native Tibetan speaker review
+    // before the IATS demo.
+    diplomatic_transcription: "དངོས་གཞིའི་ཡིག་འབྲི།",
+    normalised_transcription: "སྤྱིར་བསྒྱུར་ཡིག་འབྲི།",
+    is_title_page_question: "འདི་དབུ་ཤོག་ཡིན་ནམ།",
     yes: "ཡོད།",
     no: "མེད།",
-    correction_prompt: "གལ་ཏེ་མིན་ན་སྤྱིར་བསྒྱུར་གང་དགོས་སམ།",
-    correction_instruction: "ཟུར་ཐོ་གུ་ཡངས་ནང་དུ་ཡོད་པའི་རྒྱ་ཆེ་རུ་འགྱུར་བ་ཁོ་ན་འབྲི་རོགས།",
-    correction_placeholder: "ཚིག་ཕྲེང་འབྲི་སའི་སྒམ།",
     validation_select_option: "དང་ལེན་མ་བྱས་གོང་'ཡོད།'ཡང་ན་'མེད།'གང་རུང་གཅིག་འདེམ་རོགས།",
-    validation_correction_required: "'མེད།'འདེམས་རྐྱེན་གྱི་སྤྱིར་བསྒྱུར་གྱི་རྣམ་པ་འབྲི་རོགས།",
     download: "ཕབ་ལེན།",
   },
 };

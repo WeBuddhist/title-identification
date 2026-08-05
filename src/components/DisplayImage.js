@@ -17,15 +17,20 @@ function DisplayImage({ task }) {
 
   return (
     <div
-      className="relative w-[90%] h-auto cursor-crosshair overflow-hidden"
+      className="relative inline-block max-w-[95%] cursor-crosshair overflow-hidden"
       ref={containerRef}
     >
+      {/* width={0} height={0} + w-auto/h-auto renders at the image's actual
+          aspect ratio, whatever shape a given batch's crops turn out to be
+          (wide strips, tall pages, square crops, ...). max-h keeps very
+          tall images from pushing the transcription fields off screen. */}
       <Image
         src={url}
         alt="image"
-        width={1100}
-        height={400}
-        className="max-h-[40vh]"
+        width={0}
+        height={0}
+        sizes="95vw"
+        className="w-auto h-auto max-w-full max-h-[40vh]"
         onLoad={handleImageLoad}
         priority={true}
       />

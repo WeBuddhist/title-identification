@@ -4,7 +4,7 @@
   <br>
 </h1>
 
-<h3 align="center">Pecha Line Image Tool</h3>
+<h3 align="center">Pecha Title Checking Tool</h3>
 
 <!-- Replace the title of the repository -->
 
@@ -19,7 +19,10 @@
 
 ## Description
 
-Pecha web app tool for collecting image to text data
+Pecha web app tool for checking whether a scanned page is a title page, and
+verifying its diplomatic and normalised transcriptions. Cloned from
+[dictionary_correction](https://github.com/OpenPecha/dictionary_correction),
+which this tool shares its transcriber/reviewer/final-reviewer workflow with.
 
 ## RFXs
 Requests for work (RFWs) and requests for comments (RFCs) associated with this project:

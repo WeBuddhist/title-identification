@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE "Task" ALTER COLUMN "inference_transcript" SET DATA TYPE VARCHAR(1000),
-ALTER COLUMN "transcript" SET DATA TYPE VARCHAR(1000),
-ALTER COLUMN "reviewed_transcript" SET DATA TYPE VARCHAR(1000),
-ALTER COLUMN "final_reviewed_transcript" SET DATA TYPE VARCHAR(1000);

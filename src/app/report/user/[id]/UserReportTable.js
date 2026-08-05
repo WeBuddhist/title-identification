@@ -33,22 +33,44 @@ const UserReportTable = ({ userTaskRecord }) => {
                     <strong>Original (Diplomatic):</strong>
                     {task.diplomatic_context}
                   </div>
-                  {task.corrected_context && (
+                  <div className="grid gap-2 mb-2">
+                    <strong>Original (Normalised):</strong>
+                    {task.normalised_context}
+                  </div>
+                  {task.corrected_diplomatic && (
                     <div className="grid gap-2 mb-2">
-                      <strong>Corrected:</strong>
-                      {task.corrected_context}
+                      <strong>Corrected (Diplomatic):</strong>
+                      {task.corrected_diplomatic}
                     </div>
                   )}
-                  {task.reviewed_context && (
+                  {task.corrected_normalised && (
                     <div className="grid gap-2 mb-2">
-                      <strong>Reviewed:</strong>
-                      {task.reviewed_context}
+                      <strong>Corrected (Normalised):</strong>
+                      {task.corrected_normalised}
                     </div>
                   )}
-                  {task.final_reviewed_context && (
+                  {task.reviewed_diplomatic && (
                     <div className="grid gap-2 mb-2">
-                      <strong>Final:</strong>
-                      {task.final_reviewed_context}
+                      <strong>Reviewed (Diplomatic):</strong>
+                      {task.reviewed_diplomatic}
+                    </div>
+                  )}
+                  {task.reviewed_normalised && (
+                    <div className="grid gap-2 mb-2">
+                      <strong>Reviewed (Normalised):</strong>
+                      {task.reviewed_normalised}
+                    </div>
+                  )}
+                  {task.final_diplomatic && (
+                    <div className="grid gap-2 mb-2">
+                      <strong>Final (Diplomatic):</strong>
+                      {task.final_diplomatic}
+                    </div>
+                  )}
+                  {task.final_normalised && (
+                    <div className="grid gap-2 mb-2">
+                      <strong>Final (Normalised):</strong>
+                      {task.final_normalised}
                     </div>
                   )}
                 </td>

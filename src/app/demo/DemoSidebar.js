@@ -149,12 +149,9 @@ const DemoSidebar = ({
                   >
                     <p className="text-lg line-clamp-2">
                       {role === "TRANSCRIBER"
-                        ? task.corrected_context !== null
-                          ? task.corrected_context
-                          : task.diplomatic_context
-                        : task.reviewed_context !== null
-                        ? task.reviewed_context
-                        : task.corrected_context}
+                        ? task.corrected_diplomatic || task.diplomatic_context
+                        : task.reviewed_diplomatic ||
+                          task.corrected_diplomatic}
                     </p>
                     <div
                       className="tooltip tooltip-left"

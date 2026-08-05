@@ -2,16 +2,24 @@ const TranscriptDisplay = ({ task, role }) => {
   let text = "";
   let taskId = task.id || "";
 
-  // Get the appropriate context based on role
+  // Get the appropriate diplomatic transcription based on role
   if (role === "TRANSCRIBER") {
     // Show what the transcriber submitted
-    text = task.corrected_context || task.diplomatic_context || "";
+    text = task.corrected_diplomatic || task.diplomatic_context || "";
   } else if (role === "REVIEWER") {
     // Show what the reviewer corrected/approved
-    text = task.reviewed_context || task.corrected_context || task.diplomatic_context || "";
+    text =
+      task.reviewed_diplomatic ||
+      task.corrected_diplomatic ||
+      task.diplomatic_context ||
+      "";
   } else if (role === "FINAL_REVIEWER") {
     // Show what the final reviewer finalized
-    text = task.final_reviewed_context || task.reviewed_context || task.diplomatic_context || "";
+    text =
+      task.final_diplomatic ||
+      task.reviewed_diplomatic ||
+      task.diplomatic_context ||
+      "";
   }
 
   const cleanText = stripHtml(text); // Stripping HTML tags

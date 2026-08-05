@@ -9,6 +9,7 @@ const TaskForm = ({ groups }) => {
   const ref = useRef(null);
   const [selectedFile, setSelectedFile] = useState([]);
   const [selectedOption, setSelectedOption] = useState("");
+  const [imageBaseUrl, setImageBaseUrl] = useState("");
 
   const handleOptionChange = async (event) => {
     setSelectedOption(event.target.value);
@@ -33,6 +34,7 @@ const TaskForm = ({ groups }) => {
     }
     const taskJson = JSON.stringify(selectedFile);
     formData.append("tasks", taskJson);
+    formData.append("image_base_url", imageBaseUrl);
     const tasksCreated = await createTasksFromCSV(formData);
     // if tasksCreated is not empty, then toast success message
     // else toast error message
@@ -56,6 +58,27 @@ const TaskForm = ({ groups }) => {
           selectedOption={selectedOption}
           handleOptionChange={handleOptionChange}
         />
+        <div className="form-control w-full max-w-xs">
+          <label className="label" htmlFor="image_base_url">
+            <span className="label-text text-base font-semibold">
+              Image base URL (S3 folder):
+            </span>
+          </label>
+          <input
+            id="image_base_url"
+            name="image_base_url"
+            type="text"
+            placeholder="https://bucket.s3.amazonaws.com/folder"
+            className="input input-bordered input-accent max-w-xs"
+            value={imageBaseUrl}
+            onChange={(e) => setImageBaseUrl(e.target.value)}
+          />
+          <label className="label" htmlFor="image_base_url">
+            <span className="label-text-alt text-gray-500">
+              Leave blank if the CSV already has a full url/image_url column.
+            </span>
+          </label>
+        </div>
         <div className="form-control w-full max-w-xs">
           <label className="label" htmlFor="file_name">
             <span className="label-text text-base font-semibold">

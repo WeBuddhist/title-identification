@@ -4,70 +4,57 @@ import React, { useEffect, useRef, useState } from "react";
 import AppContext from "@/components/AppContext";
 import DemoSidebar from "./DemoSidebar";
 import ActionButtons from "@/components/ActionButtons";
+import DisplayImage from "@/components/DisplayImage";
 import { changeTaskState } from "@/model/action";
-import Image from "next/image";
 
 const DemoPage = ({ userDetail, language, tasks, userHistory }) => {
   const [languageSelected, setLanguageSelected] = useState("bo");
   const lang = language[languageSelected];
   const [taskList, setTaskList] = useState(tasks);
   const [historyList, setHistoryList] = useState(userHistory); // {completedTaskCount, totalTaskCount, totalTaskPassed}
-  const [correctionText, setCorrectionText] = useState("");
-  const [isCorrect, setIsCorrect] = useState(null);
-  const audioRef = useRef(null);
+  const [diplomaticText, setDiplomaticText] = useState("");
+  const [normalisedText, setNormalisedText] = useState("");
+  const [isTitlePage, setIsTitlePage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { id: userId, group_id: groupId, role } = userDetail;
+  const { role } = userDetail;
 
   useEffect(() => {
     if (taskList?.length) {
       setIsLoading(false);
       const currentTask = taskList[0];
-      // Initialize correction text to empty - user hasn't made decision yet
-      setCorrectionText("");
-      setIsCorrect(null);
+      // Practice mode always starts a task from Rachael's raw script output
+      setDiplomaticText(currentTask?.diplomatic_context || "");
+      setNormalisedText(currentTask?.normalised_context || "");
+      setIsTitlePage(null);
     } else {
       setIsLoading(false);
     }
   }, [taskList, role]);
 
+  const handleYes = () => setIsTitlePage(true);
+  const handleNo = () => {
+    setIsTitlePage(false);
+    const currentTask = taskList[0];
+    setDiplomaticText(currentTask?.diplomatic_context || "");
+    setNormalisedText(currentTask?.normalised_context || "");
+  };
+
   const updateTaskAndIndex = async (action) => {
     try {
       if (!taskList?.length) return;
-      
+
       const task = taskList[0];
       const { id } = task;
-      const updatedTask = { ...task };
-      
-      // Apply context updates based on role and user's decision
-      switch (role) {
-        case "TRANSCRIBER":
-          updatedTask.is_correct = isCorrect;
-          if (isCorrect === true) {
-            updatedTask.corrected_context = task.normalised_context;
-          } else if (isCorrect === false) {
-            updatedTask.corrected_context = correctionText;
-          }
-          break;
-        case "REVIEWER":
-          updatedTask.corrected_is_correct = isCorrect;
-          if (isCorrect === true) {
-            updatedTask.reviewed_context = task.corrected_context;
-          } else if (isCorrect === false) {
-            updatedTask.reviewed_context = correctionText;
-          }
-          break;
-        case "FINAL_REVIEWER":
-          updatedTask.reviewed_is_correct = isCorrect;
-          if (isCorrect === true) {
-            updatedTask.final_reviewed_context = task.reviewed_context;
-          } else if (isCorrect === false) {
-            updatedTask.final_reviewed_context = correctionText;
-          }
-          break;
-      }
-      
+      const updatedTask = {
+        ...task,
+        is_title_page: isTitlePage,
+        corrected_diplomatic: diplomaticText,
+        corrected_normalised: normalisedText,
+      };
+
       const changeState = await changeTaskState(updatedTask, role, action);
       // remove the task from the tasklist and add to history
+      // Practice mode only — nothing here is persisted to the database.
       setTaskList((prev) => prev.filter((task) => task.id !== id));
       setHistoryList((prev) => [
         {
@@ -81,6 +68,8 @@ const DemoPage = ({ userDetail, language, tasks, userHistory }) => {
       throw new Error(error);
     }
   };
+
+  const canEdit = isTitlePage === true;
 
   return (
     <>
@@ -96,58 +85,61 @@ const DemoPage = ({ userDetail, language, tasks, userHistory }) => {
           setHistoryList={setHistoryList}
         >
           {/* Page content here */}
-          <div className="h-full w-full flex flex-col justify-center items-center">
+          {/* justify-start, not center: breaks position:sticky on the image
+              band below once content overflows and the page scrolls. */}
+          <div className="h-full w-full flex flex-col justify-start items-center">
             {isLoading ? (
               <h1 className="font-bold text-md md:text-3xl">loading...</h1>
             ) : taskList?.length ? (
               <>
-                {role === "REVIEWER" && (
-                  <p className="mt-4 md:mt-10">
-                    <strong>{lang.transcriber} : </strong>
-                    <span>{taskList[0].transcriber?.name}</span>
-                  </p>
-                )}
+                <div className="sticky top-0 z-10 w-full flex flex-col items-center bg-white pt-3 pb-2">
+                  <DisplayImage task={taskList[0]} />
+                </div>
                 <div className="w-[90%] my-5 md:my-10">
                   <div className="flex flex-col gap-10 border rounded-md shadow-sm shadow-gray-400 items-center p-4">
                     <div className="w-full space-y-4">
                       <div className="space-y-2">
-                        <label className="text-red-500 font-bold">{lang.original}</label>
+                        <label className="text-red-500 font-bold">
+                          {lang.diplomatic_transcription}
+                        </label>
                         <textarea
-                          value={taskList[0]?.diplomatic_context || ""}
-                          readOnly
-                          className="w-full p-2 border rounded-md bg-gray-50 text-gray-800 resize-none text-4xl"
+                          value={diplomaticText}
+                          onChange={(e) => setDiplomaticText(e.target.value)}
+                          readOnly={!canEdit}
+                          className={`w-full p-2 border rounded-md resize-none text-4xl ${
+                            canEdit
+                              ? "bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              : "bg-gray-50 text-gray-800"
+                          }`}
                           rows={3}
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-green-500 font-bold">{lang.suggested_normalisation}</label>
+                        <label className="text-green-500 font-bold">
+                          {lang.normalised_transcription}
+                        </label>
                         <textarea
-                          value={(() => {
-                            const currentTask = taskList[0];
-                            switch (role) {
-                              case "TRANSCRIBER":
-                                return currentTask?.normalised_context || "";
-                              case "REVIEWER":
-                                return currentTask?.corrected_context || "";
-                              case "FINAL_REVIEWER":
-                                return currentTask?.reviewed_context || "";
-                              default:
-                                return "";
-                            }
-                          })()}
-                          readOnly
-                          className="w-full p-2 border rounded-md bg-gray-50 text-gray-800 resize-none text-4xl"
+                          value={normalisedText}
+                          onChange={(e) => setNormalisedText(e.target.value)}
+                          readOnly={!canEdit}
+                          className={`w-full p-2 border rounded-md resize-none text-4xl ${
+                            canEdit
+                              ? "bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              : "bg-gray-50 text-gray-800"
+                          }`}
                           rows={3}
                         />
                       </div>
-                      
+
                       <div className="text-center">
-                        <h3 className="text-xl font-bold mb-4">{lang.is_correct_question}</h3>
+                        <h3 className="text-xl font-bold mb-4">
+                          {lang.is_title_page_question}
+                        </h3>
                         <div className="flex justify-center gap-4 mb-4">
                           <button
-                            onClick={() => setIsCorrect(true)}
+                            onClick={handleYes}
                             className={`px-8 py-3 rounded-md font-medium ${
-                              isCorrect === true
+                              isTitlePage === true
                                 ? "bg-green-500 text-white shadow-lg transform scale-105"
                                 : "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200"
                             }`}
@@ -155,9 +147,9 @@ const DemoPage = ({ userDetail, language, tasks, userHistory }) => {
                             {lang.yes}
                           </button>
                           <button
-                            onClick={() => setIsCorrect(false)}
+                            onClick={handleNo}
                             className={`px-8 py-3 rounded-md font-medium ${
-                              isCorrect === false
+                              isTitlePage === false
                                 ? "bg-red-500 text-white shadow-lg transform scale-105"
                                 : "bg-red-100 text-red-700 border border-red-300 hover:bg-red-200"
                             }`}
@@ -166,18 +158,6 @@ const DemoPage = ({ userDetail, language, tasks, userHistory }) => {
                           </button>
                         </div>
                       </div>
-                      
-                      {isCorrect === false && (
-                        <div className="space-y-2">
-                          <label className="font-medium text-gray-700">{lang.correction_prompt}</label>
-                          <textarea
-                            value={correctionText}
-                            onChange={(e) => setCorrectionText(e.target.value)}
-                            className="w-full p-3 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-4xl text-black"
-                            rows={3}
-                          />
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
