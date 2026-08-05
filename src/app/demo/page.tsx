@@ -2,6 +2,7 @@ import React from "react";
 import DemoPage from "./DemoPage";
 import languagesObject from "../../../data/language";
 import prisma from "@/service/db";
+export const dynamic = "force-dynamic";
 
 const Page = async () => {
   const language = languagesObject;

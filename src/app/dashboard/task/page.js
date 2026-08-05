@@ -1,6 +1,7 @@
 import React from "react";
 import TaskDashbooard from "./TaskDashbooard";
 import { getAllGroup } from "@/model/group";
+export const dynamic = "force-dynamic";
 
 const Task = async ({ searchParams }) => {
   const groups = await getAllGroup();
