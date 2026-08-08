@@ -21,12 +21,6 @@ export default async function Home({ searchParams }: { searchParams: any }) {
     }
   }
 
-  const routes = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Report", path: "/report" },
-    { name: "Stats", path: "/stats" },
-  ];
-
   return (
     // justify-start (not center): position: sticky inside a centered flex
     // column doesn't reliably stick once content overflows and scrolls.
@@ -40,18 +34,9 @@ export default async function Home({ searchParams }: { searchParams: any }) {
           <div className="text-xl font-semibold mt-10 p-5 text-center">
             No user found ,URL must end with ?session=EMAIL
           </div>
-          <div className="flex flex-col gap-6 sm:flex-row">
-            {routes.map((route) => (
-              <Link
-                key={route.name}
-                href={route.path}
-                type="button"
-                className="btn btn-accent"
-              >
-                {route.name}
-              </Link>
-            ))}
-          </div>
+          <Link href="/dashboard" type="button" className="btn btn-accent">
+            Dashboard
+          </Link>
         </>
       ) : errMsg ? (
         <div className="mt-10 p-5 text-xl font-semibold text-center">

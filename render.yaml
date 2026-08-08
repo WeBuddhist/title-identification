@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: title-identification
+    env: node
+    plan: starter
+    # prisma stays in dependencies so migrate deploy works after production prune
+    buildCommand: npm ci --production=false && npm run build && npm prune --production
+    startCommand: npm run start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: ~18.18.0
+      - key: NODE_ENV
+        value: production
+      # set in the dashboard: reusing the old dictionary database will fail the
+      # init migration, since that schema is already populated
+      - key: DATABASE_URL
+        sync: false
