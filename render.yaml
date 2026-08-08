@@ -12,6 +12,10 @@ services:
         value: ~18.18.0
       - key: NODE_ENV
         value: production
+      # starter is 0.5 CPU / 512 MB; sharp otherwise sizes its thread pool from
+      # the host's core count and runs several resizes of an 18 MP scan at once
+      - key: VIPS_CONCURRENCY
+        value: "1"
       # set in the dashboard: reusing the old dictionary database will fail the
       # init migration, since that schema is already populated
       - key: DATABASE_URL
