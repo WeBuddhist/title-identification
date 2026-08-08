@@ -1,6 +1,6 @@
 let languagesObject = {
   en: {
-    title: "Title Checking Tool",
+    title: "Title Identification Tool",
     project: "Project Info",
     user: "User",
     group: "Group",
@@ -18,11 +18,9 @@ let languagesObject = {
     reject: "Reject",
     save: "Save",
     ignore: "Ignore",
-    file: "File",
-    speed: "Speed",
     language: "Language",
     history: "History",
-    // Title checking UI
+    // Title identification UI
     diplomatic_transcription: "Diplomatic transcription",
     normalised_transcription: "Normalised transcription",
     is_title_page_question: "Is this a title page?",
@@ -32,7 +30,7 @@ let languagesObject = {
     download: "Download",
   },
   bo: {
-    title: "Title Checking Tool",
+    title: "Title Identification Tool",
     project: "ལས་འཆར་ཆ་འཕྲིན།",
     user: "སྤྱོད་མཁན།",
     group: "སྡེ་ཚན།",
@@ -50,13 +48,10 @@ let languagesObject = {
     reject: " ངོས་ལེན་མེད་པ།",
     save: "ཉར་ཚགས།",
     ignore: "སྣང་མེད་",
-    file: "ཡིག་ཆ།",
-    speed: "མྱུར་ཚད།",
     language: "སྐད་ཡིག།",
     history: "ལོ་རྒྱུས།",
-    // Title checking UI
-    // NOTE: draft translation, please have a native Tibetan speaker review
-    // before the IATS demo.
+    // Title identification UI
+    // NOTE: draft translation, please have a native Tibetan speaker review.
     diplomatic_transcription: "དངོས་གཞིའི་ཡིག་འབྲི།",
     normalised_transcription: "སྤྱིར་བསྒྱུར་ཡིག་འབྲི།",
     is_title_page_question: "འདི་དབུ་ཤོག་ཡིན་ནམ།",

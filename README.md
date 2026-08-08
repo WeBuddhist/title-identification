@@ -4,7 +4,7 @@
   <br>
 </h1>
 
-<h3 align="center">Pecha Title Checking Tool</h3>
+<h3 align="center">Pecha Title Identification Tool</h3>
 
 <!-- Replace the title of the repository -->
 
@@ -50,6 +50,6 @@ set Environment variables as:
 
 ## Acknowledgements
 
-**Pecha Line Image Tool** is build using Nextjs 13,Prisma and PostgreSQL.
+**Pecha Title Identification Tool** is built using Next.js, Prisma and PostgreSQL.
 
 We are always open to cooperation in introducing new features, tool integrations and testing solutions.

@@ -94,7 +94,7 @@ export default function DownloadPage() {
             {languageSelected === "en" ? "Download Data" : "གྲངས་ཐོ་ཕབ་ལེན།"}
           </h1>
           <Link
-            href="/"
+            href={session ? `/?session=${encodeURIComponent(session)}` : "/"}
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium"
           >
             {languageSelected === "en" ? "← Back" : "← རྒྱབ་ལོག"}

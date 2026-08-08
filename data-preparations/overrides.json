@@ -1,0 +1,19 @@
+{
+  "_comment": "Spreadsheet image names that do not match the object actually stored in S3. Verified with HEAD requests against the Correction-source bucket.",
+  "rename": {
+    "DSCN5214.JPG": "0001_DSCN5214.JPG",
+    "0011_DSCN5224b.JPG": "0011_DSCN5224.JPG",
+    "0017_DSCN5230a.JPG": "0017_DSCN5230.JPG",
+    "0021_DSCN5234b.JPG": "0021_DSCN5234.JPG",
+    "0026_DSCN5239b.JPG": "0026_DSCN5239.JPG",
+    "0030_DSCN5243b.JPG": "0030_DSCN5243.JPG",
+    "0039_DSCN5252b.png": "0039_DSCN5252.JPG",
+    "རྨ་རྒྱལ་པོང་རའི་བསང་མཆོད་དབུ་བཞུགས་སྷོ། (1).jpg": "0083_རྨ་རྒྱལ་པོང་རའི་བསང་མཆོད་དབུ་བཞུགས་སྷོ། (1).jpg"
+  },
+  "skip": {
+    "སྒྲོན་མ་དབུ་ལགས་བཞུགས་སྷོ། (1).jpg": "no matching object found in S3",
+    "མཐུ་ཆེན་པོང་རའི་སྤྭན་འདྲེན་དབུ་ལགས་སྷོ། (1).jpg": "no matching object found in S3",
+    "དབང་བསྐུར་དང་གཟེས་སྤྲོད་བཞུགས་སྷོ། (1).jpg": "no matching object found in S3",
+    "དེ་ནས་སེ་རོག་རྩ་གཟུགས་བཞུགས་སྷོ། (1).jpg": "no matching object found in S3"
+  }
+}

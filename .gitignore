@@ -15,6 +15,7 @@ next-env.d.ts
 
 # Dependencies
 node_modules/
+.venv/
 
 # Other common ignores
 .DS_Store

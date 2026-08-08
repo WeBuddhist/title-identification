@@ -3,8 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dictionary Checking Tool",
-  description: "Tool by OpenPecha for dictionary data checking",
+  title: "Title Identification Tool",
+  description: "Tool by OpenPecha for title identification",
 };
 
 export default function RootLayout({

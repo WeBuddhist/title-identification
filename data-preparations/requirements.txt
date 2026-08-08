@@ -1,0 +1,2 @@
+# Only needed for `prepare_tasks.py --insert`; the CSV step is stdlib-only.
+psycopg[binary]>=3.2.10
