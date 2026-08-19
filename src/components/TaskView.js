@@ -34,6 +34,41 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
   const currentTimeRef = useRef(null);
   const prefetchPromiseRef = useRef(null);
   const isPrefetchingRef = useRef(false);
+  const contentRef = useRef(null);
+  const imageAreaRef = useRef(null);
+  const [imageMaxHeight, setImageMaxHeight] = useState(null);
+
+  // Images arrive as-is (no cropping or preprocessing), so their shapes are
+  // unpredictable batch to batch. Instead of a guessed viewport cap, measure
+  // the screen height everything except the image needs (card, its margins,
+  // band padding, reviewer names, navbar) and hand the image all the rest —
+  // every shape then renders as large as this screen allows while image +
+  // card still fit together without scrolling. Re-measured whenever anything
+  // resizes (window, text wrapping, the section question opening). Floored so
+  // a cramped window still shows a legible image and the page scrolls instead
+  // (the sticky band keeps the image visible in that case).
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content) return;
+    const measure = () => {
+      if (!contentRef.current || !imageAreaRef.current) return;
+      const nonImageHeight =
+        contentRef.current.scrollHeight - imageAreaRef.current.offsetHeight;
+      const available =
+        window.innerHeight - contentRef.current.offsetTop - nonImageHeight - 2;
+      setImageMaxHeight(Math.max(240, Math.floor(available)));
+    };
+    measure();
+    // Observing the content wrapper catches every layout change; image-only
+    // changes cancel out of the formula, so this cannot feed back on itself.
+    const observer = new ResizeObserver(measure);
+    observer.observe(content);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
 
   // The pair of texts each role starts from: the transcriber works from
   // Rachael's script output, reviewers work from the previous stage's answer.
@@ -344,8 +379,12 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
   const textBoxSharedClasses =
     "col-start-1 row-start-1 w-full p-2 border rounded-md text-4xl whitespace-pre-wrap break-words";
 
+  // lang="bo" on the wrapper (inherited by textarea AND its invisible replica,
+  // which must keep identical text metrics). spellCheck off: browsers have no
+  // Tibetan dictionary, so OS-level spellcheck red-underlines every word —
+  // testers read that as errors in the source text.
   const renderAutoGrowTextarea = (value, onChange) => (
-    <div className="grid w-full">
+    <div className="grid w-full" lang="bo">
       <div
         aria-hidden="true"
         className={`${textBoxSharedClasses} invisible border-transparent`}
@@ -357,6 +396,9 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
         onChange={onChange}
         readOnly={!canEdit}
         disabled={isSubmitting}
+        spellCheck={false}
+        autoCorrect="off"
+        autoCapitalize="off"
         className={`${textBoxSharedClasses} resize-none overflow-hidden ${
           canEdit
             ? "bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -384,7 +426,10 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
         {/* Page content here */}
         {/* justify-start, not center: breaks position:sticky on the image
             band below once content overflows and the page scrolls. */}
-        <div className="w-full flex flex-col justify-start items-center">
+        <div
+          ref={contentRef}
+          className="w-full flex flex-col justify-start items-center"
+        >
           {isLoading ? (
             <h1 className="font-bold text-md md:text-3xl">loading...</h1>
           ) : taskList?.length ? (
@@ -416,7 +461,15 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
                     )}
                   </div>
                 )}
-                <DisplayImage task={taskList[0]} />
+                <div
+                  ref={imageAreaRef}
+                  className="w-full flex justify-center"
+                >
+                  <DisplayImage
+                    task={taskList[0]}
+                    maxHeight={imageMaxHeight}
+                  />
+                </div>
               </div>
               <div className="w-[90%] my-3 md:my-4">
                 <div className="flex flex-col border rounded-md shadow-sm shadow-gray-400 items-center p-4">
