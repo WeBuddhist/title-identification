@@ -27,6 +27,7 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTitlePage, setIsTitlePage] = useState(null);
+  const [isSectionTitle, setIsSectionTitle] = useState(null);
   const [diplomaticText, setDiplomaticText] = useState("");
   const [normalisedText, setNormalisedText] = useState("");
   const { id: userId, group_id: groupId, role } = userDetail;
@@ -99,6 +100,7 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
       setIsLoading(false);
       const { diplomatic, normalised } = getSourceValues();
       setIsTitlePage(null); // Reset to null, will be set by user interaction
+      setIsSectionTitle(null);
       setDiplomaticText(diplomatic);
       setNormalisedText(normalised);
 
@@ -115,16 +117,23 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
   const handleYes = () => {
     if (isSubmitting) return;
     setIsTitlePage(true);
+    // The section question only applies to non-title pages
+    setIsSectionTitle(null);
   };
 
   const handleNo = () => {
     if (isSubmitting) return;
     setIsTitlePage(false);
-    // No editing needed on NO — reset to the untouched source text in case
-    // the user had typed something in while YES was selected.
-    const { diplomatic, normalised } = getSourceValues();
-    setDiplomaticText(diplomatic);
-    setNormalisedText(normalised);
+  };
+
+  const handleSectionYes = () => {
+    if (isSubmitting) return;
+    setIsSectionTitle(true);
+  };
+
+  const handleSectionNo = () => {
+    if (isSubmitting) return;
+    setIsSectionTitle(false);
   };
 
   const validateSubmission = () => {
@@ -138,6 +147,17 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
       };
     }
 
+    // A NO to "title page?" raises the follow-up section-title question,
+    // which must also be answered
+    if (isTitlePage === false && isSectionTitle === null) {
+      return {
+        isValid: false,
+        message:
+          lang.validation_select_section_option ||
+          "Please answer 'Is this a section title?' before submitting.",
+      };
+    }
+
     return { isValid: true, message: "" };
   };
 
@@ -148,19 +168,26 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
       return updatedTask;
     }
 
+    // The section-title answer only exists for non-title pages; null means
+    // the question was never asked (title page = YES)
+    const sectionAnswer = isTitlePage === false ? isSectionTitle : null;
+
     switch (role) {
       case "TRANSCRIBER":
         updatedTask.is_title_page = isTitlePage;
+        updatedTask.is_section_title = sectionAnswer;
         updatedTask.corrected_diplomatic = diplomaticText;
         updatedTask.corrected_normalised = normalisedText;
         break;
       case "REVIEWER":
         updatedTask.reviewed_is_title = isTitlePage;
+        updatedTask.reviewed_is_section_title = sectionAnswer;
         updatedTask.reviewed_diplomatic = diplomaticText;
         updatedTask.reviewed_normalised = normalisedText;
         break;
       case "FINAL_REVIEWER":
         updatedTask.final_is_title = isTitlePage;
+        updatedTask.final_is_section_title = sectionAnswer;
         updatedTask.final_diplomatic = diplomaticText;
         updatedTask.final_normalised = normalisedText;
         break;
@@ -305,7 +332,40 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
     }
   };
 
-  const canEdit = isTitlePage === true && !isSubmitting;
+  // Corrections to both transcriptions are wanted whether or not the page is
+  // a title page, so the text boxes are always editable
+  const canEdit = !isSubmitting;
+
+  // Auto-growing one-line text boxes (client request: fit one line so the
+  // page needs less scrolling on a laptop). An invisible replica of the text
+  // shares the textarea's grid cell; it sets the row height to the wrapped
+  // text height, so the box is one line tall for typical titles but still
+  // grows to show longer text instead of hiding it behind an inner scrollbar.
+  const textBoxSharedClasses =
+    "col-start-1 row-start-1 w-full p-2 border rounded-md text-4xl whitespace-pre-wrap break-words";
+
+  const renderAutoGrowTextarea = (value, onChange) => (
+    <div className="grid w-full">
+      <div
+        aria-hidden="true"
+        className={`${textBoxSharedClasses} invisible border-transparent`}
+      >
+        {value + " "}
+      </div>
+      <textarea
+        value={value}
+        onChange={onChange}
+        readOnly={!canEdit}
+        disabled={isSubmitting}
+        className={`${textBoxSharedClasses} resize-none overflow-hidden ${
+          canEdit
+            ? "bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+            : "bg-gray-50 text-gray-800"
+        } disabled:opacity-60`}
+        rows={1}
+      />
+    </div>
+  );
 
   return (
     <AppContext.Provider
@@ -358,42 +418,24 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
                 )}
                 <DisplayImage task={taskList[0]} />
               </div>
-              <div className="w-[90%] my-5 md:my-10">
-                <div className="flex flex-col gap-10 border rounded-md shadow-sm shadow-gray-400 items-center p-4">
+              <div className="w-[90%] my-3 md:my-4">
+                <div className="flex flex-col border rounded-md shadow-sm shadow-gray-400 items-center p-4">
                   <div className="w-full space-y-4">
                     <div className="space-y-2">
                       <label className="text-red-500 font-bold">
                         {lang.diplomatic_transcription}
                       </label>
-                      <textarea
-                        value={diplomaticText}
-                        onChange={(e) => setDiplomaticText(e.target.value)}
-                        readOnly={!canEdit}
-                        disabled={isSubmitting}
-                        className={`w-full p-2 border rounded-md resize-none text-4xl ${
-                          canEdit
-                            ? "bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            : "bg-gray-50 text-gray-800"
-                        } disabled:opacity-60`}
-                        rows={3}
-                      />
+                      {renderAutoGrowTextarea(diplomaticText, (e) =>
+                        setDiplomaticText(e.target.value)
+                      )}
                     </div>
                     <div className="space-y-2">
                       <label className="text-green-500 font-bold">
                         {lang.normalised_transcription}
                       </label>
-                      <textarea
-                        value={normalisedText}
-                        onChange={(e) => setNormalisedText(e.target.value)}
-                        readOnly={!canEdit}
-                        disabled={isSubmitting}
-                        className={`w-full p-2 border rounded-md resize-none text-4xl ${
-                          canEdit
-                            ? "bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            : "bg-gray-50 text-gray-800"
-                        } disabled:opacity-60`}
-                        rows={3}
-                      />
+                      {renderAutoGrowTextarea(normalisedText, (e) =>
+                        setNormalisedText(e.target.value)
+                      )}
                     </div>
 
                     <div className="text-center">
@@ -424,6 +466,37 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
                           {lang.no}
                         </button>
                       </div>
+                      {isTitlePage === false && (
+                        <>
+                          <h3 className="text-xl font-bold mb-4">
+                            {lang.is_section_title_question}
+                          </h3>
+                          <div className="flex justify-center gap-4 mb-4">
+                            <button
+                              onClick={handleSectionYes}
+                              disabled={isSubmitting}
+                              className={`px-8 py-3 rounded-md font-medium ${
+                                isSectionTitle === true
+                                  ? "bg-green-500 text-white shadow-lg transform scale-105"
+                                  : "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200"
+                              } disabled:opacity-60`}
+                            >
+                              {lang.yes}
+                            </button>
+                            <button
+                              onClick={handleSectionNo}
+                              disabled={isSubmitting}
+                              className={`px-8 py-3 rounded-md font-medium ${
+                                isSectionTitle === false
+                                  ? "bg-red-500 text-white shadow-lg transform scale-105"
+                                  : "bg-red-100 text-red-700 border border-red-300 hover:bg-red-200"
+                              } disabled:opacity-60`}
+                            >
+                              {lang.no}
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

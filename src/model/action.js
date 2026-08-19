@@ -32,6 +32,7 @@ const getTaskSelectForRole = (role) => {
         diplomatic_context: true,
         normalised_context: true,
         is_title_page: true,
+        is_section_title: true,
         corrected_diplomatic: true,
         corrected_normalised: true,
       };
@@ -41,6 +42,7 @@ const getTaskSelectForRole = (role) => {
         corrected_diplomatic: true,
         corrected_normalised: true,
         reviewed_is_title: true,
+        reviewed_is_section_title: true,
         reviewed_diplomatic: true,
         reviewed_normalised: true,
         transcriber: { select: { name: true } },
@@ -51,6 +53,7 @@ const getTaskSelectForRole = (role) => {
         reviewed_diplomatic: true,
         reviewed_normalised: true,
         final_is_title: true,
+        final_is_section_title: true,
         final_diplomatic: true,
         final_normalised: true,
         transcriber: { select: { name: true } },
@@ -62,12 +65,15 @@ const getTaskSelectForRole = (role) => {
         diplomatic_context: true,
         normalised_context: true,
         is_title_page: true,
+        is_section_title: true,
         corrected_diplomatic: true,
         corrected_normalised: true,
         reviewed_is_title: true,
+        reviewed_is_section_title: true,
         reviewed_diplomatic: true,
         reviewed_normalised: true,
         final_is_title: true,
+        final_is_section_title: true,
         final_diplomatic: true,
         final_normalised: true,
         transcriber: { select: { name: true } },
@@ -244,12 +250,15 @@ export const assignUnassignedTasks = async (
         t.diplomatic_context,
         t.normalised_context,
         t.is_title_page,
+        t.is_section_title,
         t.corrected_diplomatic,
         t.corrected_normalised,
         t.reviewed_is_title,
+        t.reviewed_is_section_title,
         t.reviewed_diplomatic,
         t.reviewed_normalised,
         t.final_is_title,
+        t.final_is_section_title,
         t.final_diplomatic,
         t.final_normalised,
         t.reviewer_rejected_count,
@@ -387,10 +396,12 @@ export const updateTask = async (
       // (already processed by UI business logic)
       if (changedTask.state !== "trashed") {
         dataToUpdate.is_title_page = task.is_title_page;
+        dataToUpdate.is_section_title = task.is_section_title;
         dataToUpdate.corrected_diplomatic = task.corrected_diplomatic;
         dataToUpdate.corrected_normalised = task.corrected_normalised;
       } else {
         dataToUpdate.is_title_page = null;
+        dataToUpdate.is_section_title = null;
         dataToUpdate.corrected_diplomatic = null;
         dataToUpdate.corrected_normalised = null;
       }
@@ -404,10 +415,12 @@ export const updateTask = async (
       // (already processed by UI business logic)
       if (changedTask.state === "accepted") {
         dataToUpdate.reviewed_is_title = task.reviewed_is_title;
+        dataToUpdate.reviewed_is_section_title = task.reviewed_is_section_title;
         dataToUpdate.reviewed_diplomatic = task.reviewed_diplomatic;
         dataToUpdate.reviewed_normalised = task.reviewed_normalised;
       } else {
         dataToUpdate.reviewed_is_title = null;
+        dataToUpdate.reviewed_is_section_title = null;
         dataToUpdate.reviewed_diplomatic = null;
         dataToUpdate.reviewed_normalised = null;
       }
@@ -424,10 +437,12 @@ export const updateTask = async (
       // (already processed by UI business logic)
       if (changedTask.state === "finalised") {
         dataToUpdate.final_is_title = task.final_is_title;
+        dataToUpdate.final_is_section_title = task.final_is_section_title;
         dataToUpdate.final_diplomatic = task.final_diplomatic;
         dataToUpdate.final_normalised = task.final_normalised;
       } else {
         dataToUpdate.final_is_title = null;
+        dataToUpdate.final_is_section_title = null;
         dataToUpdate.final_diplomatic = null;
         dataToUpdate.final_normalised = null;
       }

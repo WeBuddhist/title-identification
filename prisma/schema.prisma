@@ -34,12 +34,15 @@ model Task {
   diplomatic_context            String
   normalised_context            String
   is_title_page                 Boolean?
+  is_section_title              Boolean?
   corrected_diplomatic          String?
   corrected_normalised          String?
   reviewed_is_title             Boolean?
+  reviewed_is_section_title     Boolean?
   reviewed_diplomatic           String?
   reviewed_normalised           String?
   final_is_title                Boolean?
+  final_is_section_title        Boolean?
   final_diplomatic              String?
   final_normalised              String?
   final_reviewer                User?     @relation("FinalReviewerTasks", fields: [final_reviewer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)

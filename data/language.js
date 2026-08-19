@@ -24,9 +24,12 @@ let languagesObject = {
     diplomatic_transcription: "Diplomatic transcription",
     normalised_transcription: "Normalised transcription",
     is_title_page_question: "Is this a title page?",
+    is_section_title_question: "Is this a section title?",
     yes: "YES",
     no: "NO",
     validation_select_option: "Please select YES or NO before submitting.",
+    validation_select_section_option:
+      "Please answer 'Is this a section title?' before submitting.",
     download: "Download",
   },
   bo: {
@@ -55,9 +58,12 @@ let languagesObject = {
     diplomatic_transcription: "དངོས་གཞིའི་ཡིག་འབྲི།",
     normalised_transcription: "སྤྱིར་བསྒྱུར་ཡིག་འབྲི།",
     is_title_page_question: "འདི་དབུ་ཤོག་ཡིན་ནམ།",
+    is_section_title_question: "འདི་ས་བཅད་ཀྱི་ཁ་བྱང་ཡིན་ནམ།",
     yes: "ཡོད།",
     no: "མེད།",
     validation_select_option: "དང་ལེན་མ་བྱས་གོང་'ཡོད།'ཡང་ན་'མེད།'གང་རུང་གཅིག་འདེམ་རོགས།",
+    validation_select_section_option:
+      "དང་ལེན་མ་བྱས་གོང་ས་བཅད་ཀྱི་ཁ་བྱང་ཡིན་མིན་འདེམ་རོགས།",
     download: "ཕབ་ལེན།",
   },
 };
