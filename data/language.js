@@ -58,12 +58,12 @@ let languagesObject = {
     diplomatic_transcription: "དངོས་གཞིའི་ཡིག་འབྲི།",
     normalised_transcription: "སྤྱིར་བསྒྱུར་ཡིག་འབྲི།",
     is_title_page_question: "འདི་དབུ་ཤོག་ཡིན་ནམ།",
-    is_section_title_question: "འདི་ས་བཅད་ཀྱི་ཁ་བྱང་ཡིན་ནམ།",
+    is_section_title_question: "འདི་ནི་ཡིག་ཆའི་ཚན་པ་ཞིག་གི་དཔེ་མཚན་རེད་དམ།",
     yes: "ཡོད།",
     no: "མེད།",
     validation_select_option: "དང་ལེན་མ་བྱས་གོང་'ཡོད།'ཡང་ན་'མེད།'གང་རུང་གཅིག་འདེམ་རོགས།",
     validation_select_section_option:
-      "དང་ལེན་མ་བྱས་གོང་ས་བཅད་ཀྱི་ཁ་བྱང་ཡིན་མིན་འདེམ་རོགས།",
+      "དང་ལེན་མ་བྱས་གོང་ཡིག་ཆའི་ཚན་པའི་དཔེ་མཚན་ཡིན་མིན་འདེམ་རོགས།",
     download: "ཕབ་ལེན།",
   },
 };
