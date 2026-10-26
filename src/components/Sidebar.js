@@ -172,7 +172,7 @@ const Sidebar = ({
               <div className="flex-1"></div>
               {(role === "REVIEWER" || role === "FINAL_REVIEWER") && (
                 <Link
-                  href={`/download?session=${userDetail?.email}`}
+                  href={`/download?session=${encodeURIComponent(userDetail?.email ?? "")}`}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1"
                 >
                   <svg 
@@ -190,7 +190,7 @@ const Sidebar = ({
             {role === "FINAL_REVIEWER" && (
               <section className="px-4 py-3 border-b border-b-[#384451]">
                 <Link
-                  href={`/dashboard/?session=${userDetail?.email}`}
+                  href={`/dashboard/?session=${encodeURIComponent(userDetail?.email ?? "")}`}
                   type="button"
                   className="btn btn-accent btn-wide"
                 >
