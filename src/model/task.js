@@ -218,14 +218,14 @@ export const getTaskWithRevertedState = async (task, role) => {
       (role === "TRANSCRIBER" && task.state === "trashed")
     ) {
       newState = "transcribing";
-    }
-    if (
+    } else if (
       task.state === "accepted" ||
       (role === "REVIEWER" && task.state === "trashed")
     ) {
       newState = "submitted";
-    }
-    if (task.state === "finalised" || task.state === "trashed") {
+    } else if (task.state === "finalised" || task.state === "trashed") {
+      // else-if: a plain `if` here also matched a transcriber's trashed
+      // task and sent it straight to "accepted", skipping both reviews.
       newState = "accepted";
     }
     const updatedTask = await prisma.task.update({
