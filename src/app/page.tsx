@@ -22,12 +22,9 @@ export default async function Home({ searchParams }: { searchParams: any }) {
   }
 
   return (
-    // justify-start (not center): position: sticky inside a centered flex
-    // column doesn't reliably stick once content overflows and scrolls.
-    // No overflow-y-auto here: without a bounded height it never actually
-    // scrolls itself (the document/<html> does), which makes it the sticky
-    // "scroll container" by CSS spec while it never fires a scroll event —
-    // any position:sticky descendant (the task image band) goes inert.
+    // justify-start (not center): the task page is usually taller than the
+    // screen and must start at the top. No overflow-y-auto here: without a
+    // bounded height it never scrolls itself; the document/<html> does.
     <div className="flex flex-col justify-start items-center">
       {session === undefined || session === "" ? (
         <>

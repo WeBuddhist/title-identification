@@ -34,41 +34,6 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
   const currentTimeRef = useRef(null);
   const prefetchPromiseRef = useRef(null);
   const isPrefetchingRef = useRef(false);
-  const contentRef = useRef(null);
-  const imageAreaRef = useRef(null);
-  const [imageMaxHeight, setImageMaxHeight] = useState(null);
-
-  // Images arrive as-is (no cropping or preprocessing), so their shapes are
-  // unpredictable batch to batch. Instead of a guessed viewport cap, measure
-  // the screen height everything except the image needs (card, its margins,
-  // band padding, reviewer names, navbar) and hand the image all the rest —
-  // every shape then renders as large as this screen allows while image +
-  // card still fit together without scrolling. Re-measured whenever anything
-  // resizes (window, text wrapping, the section question opening). Floored so
-  // a cramped window still shows a legible image and the page scrolls instead
-  // (the sticky band keeps the image visible in that case).
-  useEffect(() => {
-    const content = contentRef.current;
-    if (!content) return;
-    const measure = () => {
-      if (!contentRef.current || !imageAreaRef.current) return;
-      const nonImageHeight =
-        contentRef.current.scrollHeight - imageAreaRef.current.offsetHeight;
-      const available =
-        window.innerHeight - contentRef.current.offsetTop - nonImageHeight - 2;
-      setImageMaxHeight(Math.max(240, Math.floor(available)));
-    };
-    measure();
-    // Observing the content wrapper catches every layout change; image-only
-    // changes cancel out of the formula, so this cannot feed back on itself.
-    const observer = new ResizeObserver(measure);
-    observer.observe(content);
-    window.addEventListener("resize", measure);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
 
   // The pair of texts each role starts from: the transcriber works from
   // Rachael's script output, reviewers work from the previous stage's answer.
@@ -424,21 +389,16 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
         isSubmitting={isSubmitting}
       >
         {/* Page content here */}
-        {/* justify-start, not center: breaks position:sticky on the image
-            band below once content overflows and the page scrolls. */}
-        <div
-          ref={contentRef}
-          className="w-full flex flex-col justify-start items-center"
-        >
+        {/* justify-start, not center: the full-width image usually makes the
+            page taller than the screen, and it should start at the top. */}
+        <div className="w-full flex flex-col justify-start items-center">
           {isLoading ? (
             <h1 className="font-bold text-md md:text-3xl">loading...</h1>
           ) : taskList?.length ? (
             <>
-              {/* Sticky so the page image stays visible while the user scrolls
-                  down to edit the transcription fields below it — images vary
-                  in size batch to batch, and a tall one would otherwise be
-                  scrolled out of view the moment editing starts. */}
-              <div className="sticky top-0 z-10 w-full flex flex-col items-center bg-white pt-3 pb-2">
+              {/* Not sticky: at full width the image can fill most of the
+                  screen, and a sticky band would cover the card below it. */}
+              <div className="w-full flex flex-col items-center pt-3 pb-2">
                 {(role === "REVIEWER" || role === "FINAL_REVIEWER") && (
                   <div className="flex gap-4 mt-2 text-sm text-black">
                     <p>
@@ -461,14 +421,8 @@ const TaskView = ({ tasks, userDetail, language, userHistory }) => {
                     )}
                   </div>
                 )}
-                <div
-                  ref={imageAreaRef}
-                  className="w-full flex justify-center"
-                >
-                  <DisplayImage
-                    task={taskList[0]}
-                    maxHeight={imageMaxHeight}
-                  />
+                <div className="w-full flex justify-center">
+                  <DisplayImage task={taskList[0]} />
                 </div>
               </div>
               <div className="w-[90%] my-3 md:my-4">
