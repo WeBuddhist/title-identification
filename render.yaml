@@ -16,6 +16,10 @@ services:
       # the host's core count and runs several resizes of an 18 MP scan at once
       - key: VIPS_CONCURRENCY
         value: "1"
+      # MALLOC_ARENA_MAX=2 and the 256 MB heap cap live in the start script in
+      # package.json so they apply however the service is configured: without
+      # them memory from sharp's resizes piles up (glibc keeps it per thread)
+      # and the instance is killed at 512 MB, which users see as a 502.
       # set in the dashboard: reusing the old dictionary database will fail the
       # init migration, since that schema is already populated
       - key: DATABASE_URL

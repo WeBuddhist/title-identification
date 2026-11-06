@@ -6,7 +6,7 @@
     "postinstall": "prisma generate",
     "dev": "next dev",
     "build": "next build",
-    "start": "prisma migrate deploy && next start",
+    "start": "prisma migrate deploy && MALLOC_ARENA_MAX=2 NODE_OPTIONS=--max-old-space-size=256 next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
