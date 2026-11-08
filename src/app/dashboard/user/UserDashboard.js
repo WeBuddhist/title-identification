@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { AiOutlinePlus } from "react-icons/ai";
 import DashboardBtn from "@/components/DashboardBtn";
 import AddUserModal from "./AddUserModal";
