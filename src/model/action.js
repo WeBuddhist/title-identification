@@ -358,8 +358,12 @@ const taskStateTransitions = {
   },
 };
 
-// Function to change the state of a task based on user action
-export const changeTaskState = (task, role, action) => {
+// Function to change the state of a task based on user action.
+// Not exported: Next 14.2 turns every export of a "use server" file into an
+// async server action, so updateTask got a Promise back, its .state was
+// undefined, Prisma skipped the field and every submit/trash left the task
+// in "transcribing".
+const changeTaskState = (task, role, action) => {
   const newState =
     taskStateTransitions[role]?.[action] || taskStateTransitions[role]?.default;
   return { ...task, state: newState };
