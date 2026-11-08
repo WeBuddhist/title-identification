@@ -1,12 +1,22 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import languagesObject from "../../../data/language";
 import { useSearchParams } from 'next/navigation';
 
+// Next 14.1+ refuses to build a page that reads useSearchParams() outside a
+// Suspense boundary, since the query string is only known in the browser.
 export default function DownloadPage() {
+  return (
+    <Suspense>
+      <DownloadForm />
+    </Suspense>
+  );
+}
+
+function DownloadForm() {
   const searchParams = useSearchParams();
   const session = searchParams.get('session');
   const [languageSelected, setLanguageSelected] = useState("bo");
